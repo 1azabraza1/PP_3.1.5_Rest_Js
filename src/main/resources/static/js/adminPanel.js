@@ -6,11 +6,13 @@ $(async function () {
 
 async function getAllUsers() {
     let table = $('#AllUsers tbody');
-    table.empty();
 
+    console.log('отправка запроса')
     fetch('/api/admin/users')
         .then(res => res.json())
         .then(users => {
+            console.log(users);
+            table.empty();
             users.forEach(user => {
                 let tabContent = `$(
                         <tr>
@@ -166,8 +168,11 @@ async function editModal(id) {
     }
     roleSelect.addEventListener("change", changeOption);
 
-    editForm.addEventListener("submit", ev => {
+    function submitFormListener(ev) {
         ev.preventDefault();
+        roleSelect.removeEventListener("change", changeOption);
+        editForm.removeEventListener("submit", submitFormListener);
+        console.log('событие едит форм')
         fetch("api/admin/user/" + id, {
             method: 'PATCH',
             headers: {
@@ -185,5 +190,7 @@ async function editModal(id) {
             $('#closeEdit').click();
             getAllUsers();
         });
-    });
+    }
+
+    editForm.addEventListener("submit", submitFormListener);
 }
